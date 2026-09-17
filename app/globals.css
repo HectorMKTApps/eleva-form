@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-elevacx-bgDark text-elevacx-text;
+}
+
+/* Visible focus states for keyboard navigation, per accessibility spec. */
+:focus-visible {
+  outline: 2px solid theme("colors.elevacx.inputFocus");
+  outline-offset: 2px;
+}
