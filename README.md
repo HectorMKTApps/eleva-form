@@ -90,7 +90,19 @@ account's storage quota.
    Administrators can add, remove, rename, reorder, or deactivate (`Active = FALSE`) options
    here at any time — the app reads this on every form load, no redeploy needed.
 
-4. Click **Share** on the spreadsheet and share it with the service account's email address
+4. Create a third tab named exactly **`Positions`** with this header row:
+
+   | Position Title | Salary | Job Description | Active |
+   |-----------------|--------|------------------|--------|
+
+   Add one row per open role, with `Active` set to exactly **`Y`** (uppercase) to show it —
+   anything else (blank, `N`, `n`, `y` lowercase, etc.) hides that row, treated as inactive by
+   default. Only active rows appear, in the same order they appear in the sheet — reorder rows
+   to reorder the tabs. If no rows are active (or the tab is empty/missing), the panel just
+   doesn't render and the application form takes its place; no redeploy is needed to add, edit,
+   activate/deactivate, or remove positions.
+
+5. Click **Share** on the spreadsheet and share it with the service account's email address
    (from step 1.5) with **Editor** access.
 
 ## 3. Google Drive setup
@@ -216,15 +228,17 @@ To serve this at a subdomain like `apply.elevacx.com` or `careers.elevacx.com`:
 /app
   /api/applications/route.ts   POST — validates, uploads to Drive, writes to Sheets
   /api/config/route.ts         GET  — active Line of Business options from Sheets
+  /api/positions/route.ts      GET  — Open Positions (title/salary/description) from Sheets
   layout.tsx, page.tsx, globals.css
 /components
   ApplicationForm, VoiceRecorder, FileUploader, TextField, SelectField,
-  FormSection, SuccessScreen
+  FormSection, SuccessScreen, OpenPositions
 /lib
   google/       auth.ts (Sheets service account), driveAuth.ts (Drive OAuth2),
                 sheets.ts, drive.ts
   validation/   shared client + server validation rules
   security/     basic in-memory rate limiting + idempotency guard
+  cache/        short in-memory TTL cache for /api/config and /api/positions
 /types
 /utils
 /scripts

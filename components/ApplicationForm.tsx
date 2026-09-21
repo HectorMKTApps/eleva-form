@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import FormSection from "./FormSection";
 import TextField from "./TextField";
-import SelectField from "./SelectField";
+import MultiSelectField from "./MultiSelectField";
 import VoiceRecorder from "./VoiceRecorder";
 import FileUploader from "./FileUploader";
 import SuccessScreen from "./SuccessScreen";
@@ -25,7 +25,7 @@ const INITIAL_VALUES: ApplicationFormValues = {
   email: "",
   referredBy: "",
   cityAndDepartment: "",
-  lineOfBusiness: "",
+  lineOfBusiness: [],
 };
 
 function generateIdempotencyKey(): string {
@@ -142,7 +142,10 @@ export default function ApplicationForm() {
       formData.set("email", values.email.trim());
       formData.set("referredBy", values.referredBy.trim());
       formData.set("cityAndDepartment", values.cityAndDepartment.trim());
-      formData.set("lineOfBusiness", values.lineOfBusiness.trim());
+      formData.set(
+        "lineOfBusiness",
+        values.lineOfBusiness.map((value) => value.trim()).join(", ")
+      );
       formData.set("voiceNoteDurationSeconds", String(voiceNoteDuration));
       formData.set("idempotencyKey", idempotencyKeyRef.current);
       formData.set("website", ""); // honeypot — must stay empty
@@ -252,14 +255,14 @@ export default function ApplicationForm() {
           error={errors.cityAndDepartment}
           onChange={(e) => updateField("cityAndDepartment", e.target.value)}
         />
-        <SelectField
+        <MultiSelectField
           label="Line of Business of Your Interest"
           name="lineOfBusiness"
-          value={values.lineOfBusiness}
+          values={values.lineOfBusiness}
           options={linesOfBusiness}
           error={errors.lineOfBusiness ?? configError ?? undefined}
           loading={configLoading}
-          onChange={(value) => updateField("lineOfBusiness", value)}
+          onChange={(next) => updateField("lineOfBusiness", next)}
         />
       </FormSection>
 

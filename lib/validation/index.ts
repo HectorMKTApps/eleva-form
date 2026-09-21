@@ -55,11 +55,17 @@ export function validateTextFields(
     errors.cityAndDepartment = "Please enter your city and department.";
   }
 
-  if (
-    !values.lineOfBusiness.trim() ||
-    !activeLinesOfBusiness.includes(values.lineOfBusiness.trim())
-  ) {
-    errors.lineOfBusiness = "Please select the line of business you're interested in.";
+  const selectedLinesOfBusiness = values.lineOfBusiness
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+
+  const isValidLineOfBusinessSelection =
+    selectedLinesOfBusiness.length > 0 &&
+    selectedLinesOfBusiness.every((value) => activeLinesOfBusiness.includes(value));
+
+  if (!isValidLineOfBusinessSelection) {
+    errors.lineOfBusiness =
+      "Please select at least one line of business you're interested in.";
   }
 
   return errors;

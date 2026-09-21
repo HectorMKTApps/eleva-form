@@ -7,13 +7,23 @@ export interface ConfigResponse {
   linesOfBusiness: string[];
 }
 
+export interface OpenPosition {
+  title: string;
+  salary: string;
+  jobDescription: string;
+}
+
+export interface PositionsResponse {
+  positions: OpenPosition[];
+}
+
 export interface ApplicationFormValues {
   name: string;
   phone: string;
   email: string;
   referredBy: string;
   cityAndDepartment: string;
-  lineOfBusiness: string;
+  lineOfBusiness: string[];
 }
 
 export type ApplicationFieldErrors = Partial<

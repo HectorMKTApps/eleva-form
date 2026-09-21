@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { getActiveLinesOfBusiness } from "@/lib/google/sheets";
+import { withShortCache } from "@/lib/cache/shortCache";
 import type { ConfigResponse } from "@/types";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const linesOfBusiness = await getActiveLinesOfBusiness();
+    const linesOfBusiness = await withShortCache("lines-of-business", getActiveLinesOfBusiness);
     const body: ConfigResponse = { linesOfBusiness };
     return NextResponse.json(body);
   } catch (error) {

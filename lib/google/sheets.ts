@@ -3,6 +3,7 @@ import { getGoogleAuth } from "./auth";
 
 const APPLICATIONS_TAB = "Applications";
 const CONFIG_TAB = "Config";
+const POSITIONS_TAB = "Positions";
 
 function getSpreadsheetId(): string {
   const id = process.env.GOOGLE_SPREADSHEET_ID;
@@ -53,6 +54,54 @@ export async function getActiveLinesOfBusiness(): Promise<string[]> {
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
   return entries.map((entry) => entry.value);
+}
+
+export interface OpenPositionRow {
+  title: string;
+  salary: string;
+  jobDescription: string;
+}
+
+/**
+ * Positions tab: Position Title | Salary | Job Description | Active.
+ * Returns only rows where Active is exactly "Y" (case-sensitive; anything
+ * else — blank, "N", "n", "y", etc. — is treated as inactive), in the same
+ * order they appear in the sheet (no sorting), so admins control both
+ * visibility and display order just by editing/reordering rows.
+ */
+export async function getOpenPositions(): Promise<OpenPositionRow[]> {
+  const sheets = getSheetsClient();
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: getSpreadsheetId(),
+    range: `${POSITIONS_TAB}!A:D`,
+  });
+
+  const rows = res.data.values ?? [];
+  if (rows.length === 0) return [];
+
+  const headers = rows[0].map((h) => String(h ?? "").trim().toLowerCase());
+  const titleIdx = headers.findIndex((h) => h === "position title" || h === "title");
+  const salaryIdx = headers.findIndex((h) => h === "salary");
+  const descriptionIdx = headers.findIndex(
+    (h) => h === "job description" || h === "description"
+  );
+  const activeIdx = headers.findIndex((h) => h === "active");
+
+  if (titleIdx === -1 || salaryIdx === -1 || descriptionIdx === -1 || activeIdx === -1) {
+    throw new Error(
+      "Positions sheet is missing required columns (Position Title, Salary, Job Description, Active)."
+    );
+  }
+
+  return rows
+    .slice(1)
+    .filter((row) => String(row[activeIdx] ?? "").trim() === "Y")
+    .map((row) => ({
+      title: String(row[titleIdx] ?? "").trim(),
+      salary: String(row[salaryIdx] ?? "").trim(),
+      jobDescription: String(row[descriptionIdx] ?? "").trim(),
+    }))
+    .filter((entry) => entry.title.length > 0);
 }
 
 export interface ApplicationRowData {

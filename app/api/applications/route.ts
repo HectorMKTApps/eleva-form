@@ -74,7 +74,14 @@ export async function POST(
   const email = getStringField(formData, "email");
   const referredBy = getStringField(formData, "referredBy");
   const cityAndDepartment = getStringField(formData, "cityAndDepartment");
+  // The client joins its multi-select into a single ", "-separated string
+  // before sending it; split it back out only for validation, and keep the
+  // original joined string as-is for the Sheets row.
   const lineOfBusiness = getStringField(formData, "lineOfBusiness");
+  const lineOfBusinessSelections = lineOfBusiness
+    .split(",")
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
   const voiceNoteDurationRaw = getStringField(formData, "voiceNoteDurationSeconds");
   const voiceNoteDuration = Number(voiceNoteDurationRaw);
 
@@ -90,7 +97,14 @@ export async function POST(
   }
 
   const fieldErrors = validateTextFields(
-    { name, phone, email, referredBy, cityAndDepartment, lineOfBusiness },
+    {
+      name,
+      phone,
+      email,
+      referredBy,
+      cityAndDepartment,
+      lineOfBusiness: lineOfBusinessSelections,
+    },
     activeLinesOfBusiness
   );
 
