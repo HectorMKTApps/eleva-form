@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ApplicationForm from "@/components/ApplicationForm";
 import OpenPositions from "@/components/OpenPositions";
 
@@ -5,13 +6,17 @@ export default function HomePage() {
   return (
     <>
       <header className="bg-elevacx-header">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <span className="text-xl font-extrabold tracking-tight text-white">Elevacx</span>
-          <nav>
-            <a href="#" className="text-sm font-medium text-elevacx-placeholder hover:text-white">
-              Home
-            </a>
-          </nav>
+        <div className="mx-auto flex max-w-6xl items-center px-4 py-4 sm:px-6">
+          <a href="https://elevacx.com" target="_blank" rel="noopener noreferrer">
+            <Image
+              src="/elevawhite@4x.png"
+              alt="Elevacx"
+              width={362}
+              height={100}
+              priority
+              className="h-8 w-auto sm:h-9"
+            />
+          </a>
         </div>
       </header>
 
